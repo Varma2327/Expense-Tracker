@@ -1,0 +1,15 @@
+@model FinanceManager.Web.Models.Transaction
+@{
+    ViewData["Title"] = "Transaction Details";
+}
+<h1 class="h4 mb-3"><i class="bi bi-receipt me-2"></i>Transaction</h1>
+<table>
+  <tr><th>Date</th><td>@Model.Date.ToString("yyyy-MM-dd")</td></tr>
+  <tr><th>Category</th><td>@Model.Category?.Name</td></tr>
+  <tr><th>Amount</th><td>@Model.Amount.ToString("C")</td></tr>
+  <tr><th>Notes</th><td>@Model.Notes</td></tr>
+</table>
+<div class="actions">
+  <a class="btn" href="/Transactions/Edit/@Model.Id">Edit</a>
+  <a class="btn" href="/Transactions">Back</a>
+</div>

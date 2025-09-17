@@ -1,0 +1,10 @@
+@{
+    var has = TempData["Flash"] as string;
+    var kind = TempData["FlashKind"] as string ?? "success"; // success | info | warning | danger
+}
+@if (!string.IsNullOrWhiteSpace(has))
+{
+  <div class="alert alert-@kind fade-in" role="alert">
+    <i class="bi @(kind=="success"?"bi-check-circle":"bi-info-circle") me-1"></i>@has
+  </div>
+}

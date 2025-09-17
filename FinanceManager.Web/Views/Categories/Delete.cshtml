@@ -1,0 +1,13 @@
+@model FinanceManager.Web.Models.Category
+@{
+    ViewData["Title"] = "Delete Category";
+}
+<h1 class="h4 mb-3 text-danger"><i class="bi bi-trash me-2"></i>Delete Category</h1>
+<p>Are you sure you want to delete <strong>@Model.Name</strong>?</p>
+<form method="post">
+  <input type="hidden" asp-for="Id" />
+  <div class="actions">
+    <button class="btn primary" type="submit">Yes, delete</button>
+    <a class="btn" href="/Categories">Cancel</a>
+  </div>
+</form>

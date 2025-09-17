@@ -1,0 +1,90 @@
+﻿@model List<FinanceManager.Web.Services.MonthlySummary>
+@{
+    ViewData["Title"] = "Dashboard";
+    var labels = Model.Select(m => $"{m.Month}/{m.Year}").ToList();
+    var income = Model.Select(m => m.Income).ToList();
+    var expense = Model.Select(m => m.Expense).ToList();
+    var last = Model.LastOrDefault();
+    var net = (last?.Income ?? 0) - (last?.Expense ?? 0);
+}
+<div class="hero mb-3">
+  <div class="d-flex align-items-center justify-content-between">
+    <div class="section-title h5 mb-0">
+      <i class="bi bi-graph-up-arrow"></i> Dashboard
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="text-secondary">Last Month Income</div>
+      <div class="stat-value text-success">@((last?.Income ?? 0).ToString("C"))</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="text-secondary">Last Month Expense</div>
+      <div class="stat-value text-danger">@((last?.Expense ?? 0).ToString("C"))</div>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <div class="stat-card">
+      <div class="text-secondary">Last Month Net</div>
+      <div class="stat-value @(net >= 0 ? "text-success" : "text-danger")">@net.ToString("C")</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-7">
+    <div class="chart-card">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h6 mb-0"><i class="bi bi-activity me-1"></i>Income vs Expense</h2>
+      </div>
+      <canvas id="monthlyChart"></canvas>
+    </div>
+  </div>
+  <div class="col-12 col-lg-5">
+    <div class="chart-card">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h6 mb-0"><i class="bi bi-pie-chart me-1"></i>Expense Breakdown (Last Month)</h2>
+      </div>
+      <canvas id="breakdownChart"></canvas>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script>
+  const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(labels));
+  const income = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(income));
+  const expense = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(expense));
+
+  new Chart(document.getElementById('monthlyChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Income', data: income, tension: .35 },
+        { label: 'Expense', data: expense, tension: .35 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { position: 'bottom' } },
+      elements: { line: { fill: false } }
+    }
+  });
+
+  const bLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.BreakdownLabels ?? new List<string>()));
+  const bValues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.BreakdownValues ?? new List<decimal>()));
+
+  new Chart(document.getElementById('breakdownChart'), {
+    type: 'pie',
+    data: { labels: bLabels, datasets: [{ label: 'Breakdown', data: bValues }] },
+    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+  });
+</script>
+}

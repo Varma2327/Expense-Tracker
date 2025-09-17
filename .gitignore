@@ -1,0 +1,13 @@
+﻿bin/
+obj/
+*.user
+*.suo
+*.swp
+*.cache
+.vscode/
+*.sqlite
+*.db
+*.db-wal
+*.db-shm
+.publish/
+publish/

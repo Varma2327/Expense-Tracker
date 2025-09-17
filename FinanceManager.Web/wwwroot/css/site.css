@@ -1,0 +1,60 @@
+/* Theme variables (auto-adapt to light/dark) */
+:root {
+  --radius: 14px;
+  --shadow: 0 6px 24px rgba(0,0,0,.08);
+  --shadow-strong: 0 10px 32px rgba(0,0,0,.12);
+}
+
+/* Bootstrap-friendly helpers */
+.container { max-width: 1120px; }
+.stat-card, .chart-card, .panel {
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--radius);
+  background: var(--bs-body-bg);
+  backdrop-filter: saturate(1.2) blur(2px);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+}
+.stat-value { font-weight: 800; letter-spacing: .2px; font-size: 1.35rem; }
+
+/* Section headings with icon */
+.section-title { display:flex; align-items:center; gap:.5rem; font-weight:700; }
+.section-title .bi { opacity:.9 }
+
+/* Nicer buttons */
+.btn-primary { box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), .3); }
+.btn-outline-secondary:hover { background: var(--bs-secondary-bg); }
+
+/* Charts spacing */
+.chart-card canvas { max-height: 320px; }
+
+/* Tables */
+.table-responsive { border: 1px solid var(--bs-border-color); border-radius: var(--radius); box-shadow: var(--shadow); }
+.table thead th {
+  position: sticky; top: 0; z-index: 1;
+  background: var(--bs-body-bg);
+  border-bottom: 1px solid var(--bs-border-color);
+}
+.table-hover tbody tr:hover { background: rgba(var(--bs-primary-rgb), .04); }
+
+/* Badges that pop in both themes */
+.badge-soft-success { background: rgba(25,135,84,.15); color:#198754; }
+.badge-soft-danger { background: rgba(220,53,69,.15); color:#dc3545; }
+
+/* Form polish */
+.form-control, .form-select {
+  border-radius: calc(var(--radius) - 6px);
+}
+.form-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+
+/* Hero strip (optional on dashboard) */
+.hero {
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(var(--bs-primary-rgb),.10), transparent 60%);
+  border: 1px dashed rgba(var(--bs-primary-rgb), .3);
+}
+
+/* Tiny fade-in */
+.fade-in { animation: fade .35s ease-out both }
+@keyframes fade { from {opacity:.0; transform:translateY(4px)} to {opacity:1; transform:none} }

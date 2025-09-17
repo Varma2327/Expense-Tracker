@@ -1,0 +1,113 @@
+@using System.Linq
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using FinanceManager.Web.Models
+@model IEnumerable<FinanceManager.Web.Models.Transaction>
+
+@{
+    ViewData["Title"] = "Transactions";
+
+    // Make the model safe
+    var items = (Model ?? Enumerable.Empty<FinanceManager.Web.Models.Transaction>()).ToList();
+
+    // Categories select list (safe-cast)
+    var categories = ViewBag.Categories as SelectList ?? new SelectList(Enumerable.Empty<SelectListItem>());
+
+    // Totals (safe)
+    var count = items.Count;
+    var total = items.Sum(t => t.Amount);
+
+    string fromVal = ViewBag.From as string ?? "";
+    string toVal = ViewBag.To as string ?? "";
+    var selectedCategoryId = ViewBag.SelectedCategoryId;
+}
+
+<div class="d-flex align-items-center justify-content-between mb-2">
+  <h1 class="h4 mb-0"><i class="bi bi-receipt me-2"></i>Transactions</h1>
+  <a class="btn btn-primary" href="/Transactions/Create"><i class="bi bi-plus-lg me-1"></i>Add</a>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="stat-card"><div class="text-secondary">Count</div><div class="stat-value">@count</div></div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card"><div class="text-secondary">Total</div><div class="stat-value">@total.ToString("C")</div></div>
+  </div>
+</div>
+
+<form method="get" class="bg-body border rounded-3 p-3 mb-3">
+  <div class="row g-3 align-items-end">
+    <div class="col-6 col-md-3">
+      <label class="form-label">From</label>
+      <input type="date" name="from" class="form-control" value="@fromVal" />
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-label">To</label>
+      <input type="date" name="to" class="form-control" value="@toVal" />
+    </div>
+    <div class="col-12 col-md-4">
+      <label class="form-label">Category</label>
+      <select name="categoryId" class="form-select">
+        <option value="">All</option>
+        @foreach (var item in categories)
+        {
+            var isSel = (selectedCategoryId != null && item.Value == selectedCategoryId.ToString()) ? "selected" : null;
+            <option value="@item.Value" selected="@isSel">@item.Text</option>
+        }
+      </select>
+    </div>
+    <div class="col-12 col-md-2 d-flex gap-2">
+      <button class="btn btn-primary flex-fill" type="submit"><i class="bi bi-funnel me-1"></i>Filter</button>
+      <a class="btn btn-outline-secondary flex-fill" href="/Transactions">Reset</a>
+    </div>
+  </div>
+  <div class="mt-3 d-flex gap-2 flex-wrap">
+    <a class="btn btn-outline-success" href="/Transactions/ExportCsv?from=@fromVal&to=@toVal&categoryId=@selectedCategoryId"><i class="bi bi-filetype-csv me-1"></i>Export CSV</a>
+  </div>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-hover align-middle mb-0">
+    <thead>
+      <tr><th>Date</th><th>Category</th><th>Amount</th><th>Notes</th><th></th></tr>
+    </thead>
+    <tbody>
+    @foreach (var t in items) {
+      <tr>
+        <td>@t.Date.ToString("yyyy-MM-dd")</td>
+        <td>@t.Category?.Name</td>
+        @{
+          var isExpense = (t.Category?.Type == CategoryType.Expense);
+          var badge = isExpense ? "badge-soft-danger" : "badge-soft-success";
+        }
+        <td><span class="badge rounded-pill @badge">@t.Amount.ToString("C")</span></td>
+        <td>@t.Notes</td>
+        <td class="text-nowrap">
+          <a class="btn btn-outline-secondary btn-sm" href="/Transactions/Details/@t.Id"><i class="bi bi-eye me-1"></i>View</a>
+          <a class="btn btn-outline-primary btn-sm" href="/Transactions/Edit/@t.Id"><i class="bi bi-pencil me-1"></i>Edit</a>
+          <a class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirm-@t.Id">
+            <i class="bi bi-trash me-1"></i>Delete
+          </a>
+          <div class="modal fade" id="confirm-@t.Id" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title"><i class="bi bi-trash me-1 text-danger"></i>Delete transaction</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  Delete <strong>@t.Category?.Name</strong> on <strong>@t.Date.ToString("yyyy-MM-dd")</strong> for <strong>@t.Amount.ToString("C")</strong>?
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <a class="btn btn-danger" href="/Transactions/Delete/@t.Id">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    }
+    </tbody>
+  </table>
+</div>
