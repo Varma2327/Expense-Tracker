@@ -1,0 +1,7 @@
+[build]
+builder = "NIXPACKS"  # Railway auto-detects .NET
+
+[deploy]
+# tell Railway your app lives here
+rootDirectory = "FinanceManager.Web"
+startCommand = "dotnet FinanceManager.Web.dll --urls http://0.0.0.0:$PORT"
